@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
                 setContent {
                     val listOfBathroomData = response.body()?.data
                     var isDialogOpen by remember { mutableStateOf(false) }
-
+                    var isUpdateDialogOpen by remember { mutableStateOf(false) }
                     Column(
                         modifier = Modifier.fillMaxSize(),
 //                        verticalArrangement = Arrangement.Top,
@@ -71,19 +71,29 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 items(listOfBathroomData) { bathroom ->
                                     Row(
-                                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         DisplayBathroomData(bathroom)
                                         Button(
-                                            onClick = { /* Handle update button click here */ },
+                                            onClick = {
+                                                isUpdateDialogOpen = true
+                                            },
                                             modifier = Modifier.wrapContentWidth()
                                         ) {
                                             Text("Update")
                                         }
                                     }
                                 }
+                            }
+                            if (isUpdateDialogOpen) {
+                                UpdateBathroomDialog(
+                                    onDismissRequest = { onBackPressed() },
+                                    viewModel = updateBathroomViewModel
+                                )
                             }
                         } else {
                             ErrorScreen("Error: ${response.code()}")
