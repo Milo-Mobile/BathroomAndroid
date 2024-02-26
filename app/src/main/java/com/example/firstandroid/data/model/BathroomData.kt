@@ -19,7 +19,7 @@ data class GetBathroomResponse(
 data class AddBathroomResponse(
     val message: String
 )
-data class EditBathroomResponse(
+data class UpdateBathroomResponse(
     val message: String
 )
 

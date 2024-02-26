@@ -1,11 +1,10 @@
 package com.example.firstandroid.data.networking
 
-import com.example.firstandroid.ViewModel.GetBathroom.BathroomInfo
 import com.example.firstandroid.ViewModel.NewBathroom.NewBathroomData
-import com.example.firstandroid.ViewModel.UpdateBathroom.EditBathroomData
+import com.example.firstandroid.ViewModel.UpdateBathroom.UpdateBathroomData
 import com.example.firstandroid.data.model.AddBathroomResponse
-import com.example.firstandroid.data.model.EditBathroomResponse
 import com.example.firstandroid.data.model.GetBathroomResponse
+import com.example.firstandroid.data.model.UpdateBathroomResponse
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -23,7 +22,7 @@ interface ApiService {
     ): Response<AddBathroomResponse>
 
     @POST("bathroom-info/update")
-    suspend fun editBathroomData(
-        @Body requestBody: EditBathroomData
-    ): Response<EditBathroomResponse>
+    suspend fun updateBathroomData(
+        @Body requestBody: UpdateBathroomData
+    ): Response<UpdateBathroomResponse>
 }
