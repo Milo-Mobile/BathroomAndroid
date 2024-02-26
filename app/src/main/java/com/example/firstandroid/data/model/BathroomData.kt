@@ -13,10 +13,13 @@ data class BathroomData(
     val createdAt: String?,
     val modifiedAt: String?,
 )
-data class BathroomDataApi(
+data class GetBathroomResponse(
     val data: List<BathroomData>,
     )
 data class AddBathroomResponse(
+    val message: String
+)
+data class UpdateBathroomResponse(
     val message: String
 )
 

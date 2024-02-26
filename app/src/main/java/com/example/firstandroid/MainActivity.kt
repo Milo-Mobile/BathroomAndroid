@@ -2,13 +2,17 @@ package com.example.firstandroid
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -25,6 +29,8 @@ import androidx.lifecycle.lifecycleScope
 import com.example.firstandroid.BuildConfig.BuildConfig
 import com.example.firstandroid.ViewModel.NewBathroom.AddBathroomDialog
 import com.example.firstandroid.ViewModel.NewBathroom.NewBathroomViewModel
+import com.example.firstandroid.ViewModel.UpdateBathroom.UpdateBathroomDialog
+import com.example.firstandroid.ViewModel.UpdateBathroom.UpdateBathroomViewModel
 import com.example.firstandroid.data.model.BathroomData
 import com.example.firstandroid.data.networking.ApiService
 import kotlinx.coroutines.launch
@@ -37,6 +43,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewModel: NewBathroomViewModel by viewModels()
+        val updateBathroomViewModel: UpdateBathroomViewModel by viewModels()
         // Initialize Retrofit
         val retrofit = Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
@@ -51,7 +58,7 @@ class MainActivity : ComponentActivity() {
                 setContent {
                     val listOfBathroomData = response.body()?.data
                     var isDialogOpen by remember { mutableStateOf(false) }
-
+                    var isUpdateDialogOpen by remember { mutableStateOf(false) }
                     Column(
                         modifier = Modifier.fillMaxSize(),
 //                        verticalArrangement = Arrangement.Top,
@@ -63,8 +70,30 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.weight(1f)
                             ) {
                                 items(listOfBathroomData) { bathroom ->
-                                    DisplayBathroomData(bathroom)
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        DisplayBathroomData(bathroom)
+                                        Button(
+                                            onClick = {
+                                                isUpdateDialogOpen = true
+                                            },
+                                            modifier = Modifier.wrapContentWidth()
+                                        ) {
+                                            Text("Update")
+                                        }
+                                    }
                                 }
+                            }
+                            if (isUpdateDialogOpen) {
+                                UpdateBathroomDialog(
+                                    onDismissRequest = { onBackPressed() },
+                                    viewModel = updateBathroomViewModel
+                                )
                             }
                         } else {
                             ErrorScreen("Error: ${response.code()}")
@@ -81,7 +110,7 @@ class MainActivity : ComponentActivity() {
                         }
                         if (isDialogOpen) {
                             AddBathroomDialog(
-                                onDismissRequest = {  },
+                                onDismissRequest = { onBackPressed() },
                                 viewModel = viewModel
                             )
                         }
