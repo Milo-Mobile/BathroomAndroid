@@ -89,7 +89,7 @@ fun UpdateBathroomDialog(
                     }
                 }
             ) {
-                Text("Add")
+                Text("Update")
             }
         },
         dismissButton = {
