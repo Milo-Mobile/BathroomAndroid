@@ -19,6 +19,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,6 +31,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.firstandroid.BuildConfig.BuildConfig
 import com.example.firstandroid.ViewModel.NewBathroom.AddBathroomDialog
 import com.example.firstandroid.ViewModel.NewBathroom.NewBathroomViewModel
+import com.example.firstandroid.ViewModel.UpdateBathroom.UpdateBathroomData
 import com.example.firstandroid.ViewModel.UpdateBathroom.UpdateBathroomDialog
 import com.example.firstandroid.ViewModel.UpdateBathroom.UpdateBathroomViewModel
 import com.example.firstandroid.data.model.BathroomData
@@ -36,6 +39,8 @@ import com.example.firstandroid.data.networking.ApiService
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.math.BigDecimal
+import java.math.BigInteger
 
 class MainActivity : ComponentActivity() {
     private lateinit var apiService: ApiService
@@ -59,6 +64,13 @@ class MainActivity : ComponentActivity() {
                     val listOfBathroomData = response.body()?.data
                     var isDialogOpen by remember { mutableStateOf(false) }
                     var isUpdateDialogOpen by remember { mutableStateOf(false) }
+                    var selectedBathroomId by remember { mutableLongStateOf(0L) }
+                    var selectedBathroomTitle by remember { mutableStateOf("") }
+                    var selectedBathroomLocation by remember { mutableStateOf("") }
+                    var selectedBathroomCapacity by remember{ mutableIntStateOf(0) }
+                    var selectedBathroomFree by remember{ mutableStateOf(false) }
+                    var selectedBathroomCost by remember{ mutableStateOf(BigDecimal.ZERO) }
+                    var selectedBathroomHours by remember{ mutableStateOf("") }
                     Column(
                         modifier = Modifier.fillMaxSize(),
 //                        verticalArrangement = Arrangement.Top,
@@ -81,6 +93,14 @@ class MainActivity : ComponentActivity() {
                                         Button(
                                             onClick = {
                                                 isUpdateDialogOpen = true
+                                                selectedBathroomId = bathroom.id!!
+                                                selectedBathroomTitle = bathroom.title!!
+                                                selectedBathroomLocation = bathroom.location!!
+                                                selectedBathroomCapacity = bathroom.capacity!!
+                                                selectedBathroomFree = bathroom.free!!
+                                                selectedBathroomCost = bathroom.cost!!
+                                                selectedBathroomHours = bathroom.hours!!
+
                                             },
                                             modifier = Modifier.wrapContentWidth()
                                         ) {
@@ -92,7 +112,8 @@ class MainActivity : ComponentActivity() {
                             if (isUpdateDialogOpen) {
                                 UpdateBathroomDialog(
                                     onDismissRequest = { onBackPressed() },
-                                    viewModel = updateBathroomViewModel
+                                    viewModel = updateBathroomViewModel,
+                                    originalBathroomInfo = UpdateBathroomData(selectedBathroomId,selectedBathroomTitle,selectedBathroomLocation,selectedBathroomCapacity,selectedBathroomFree,selectedBathroomCost,selectedBathroomHours)
                                 )
                             }
                         } else {

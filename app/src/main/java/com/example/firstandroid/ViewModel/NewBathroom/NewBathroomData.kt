@@ -10,10 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.math.BigDecimal
 
-//create ViewModel class by extend the existing class
 class NewBathroomViewModel() : ViewModel() {
-    //define state for Data class
-
     var state by mutableStateOf(NewBathroomData())
         private set
 
