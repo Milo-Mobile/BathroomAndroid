@@ -29,7 +29,6 @@ fun AddBathroomDialog(
 ) {
     val state = viewModel.state
     val scope = rememberCoroutineScope()
-
     //remember is a function that allows you to create
     // and retain a value across recompositions.
     AlertDialog(
