@@ -14,7 +14,7 @@ interface ApiService {
     suspend fun getBathroomData(): retrofit2.Response<BathroomDataApi>
 
     @POST("bathroom-info/add")
-    suspend fun addBathroomData(
+      suspend fun addBathroomData(
         @Body requestBody: NewBathroomData
     ): Response<AddBathroomResponse>
 }
