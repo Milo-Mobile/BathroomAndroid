@@ -1,123 +1,56 @@
 package com.example.firstandroid.Presentation.UpdateBathroom
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
+import androidx.lifecycle.ViewModel
+import com.example.firstandroid.BuildConfig.BuildConfig
+import com.example.firstandroid.data.networking.ApiService
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-@Composable
-fun UpdateBathroomDialog(
-    onDismissRequest: () -> Unit,
-    viewModel: UpdateBathroomViewModel,
-    originalBathroomInfo: UpdateBathroomData
-) {
+class UpdateBathroomViewModel() : ViewModel() {
 
-    val state = viewModel.state
-    val scope = rememberCoroutineScope()
-    var title by remember { mutableStateOf(originalBathroomInfo.title) }
-    var location by remember { mutableStateOf(originalBathroomInfo.location) }
-    var capacity by remember{ mutableStateOf(originalBathroomInfo.capacity.toString()) }
-    var free by remember{ mutableStateOf(originalBathroomInfo.free) }
-    var cost by remember{ mutableStateOf(originalBathroomInfo.cost.toString()) }
-    var hours by remember{ mutableStateOf(originalBathroomInfo.hours) }
-    AlertDialog(
-        onDismissRequest = { onDismissRequest() },
-        text = {
-            Column {
-                TextField(
-                    value = title,
-                    onValueChange = { newTitle ->
-                        title = newTitle
-                        viewModel.updateTitle(title)
-                    },
-                    label = { Text("Title") }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                TextField(
-                    value = location,
-                    onValueChange = { newLocation ->
-                        location = newLocation
-                        viewModel.updateLocation(location)
-                    },
-                    label = { Text("Location") }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                TextField(
-                    value = capacity,
-                    onValueChange = { newCapacity ->
-                        capacity = newCapacity
-                        viewModel.updateCapacity(capacity)
-                    },
-                    label = { Text("Capacity") }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Free")
-                    Checkbox(
-                        checked = free,
-                        onCheckedChange = { isChecked ->
-                            free = isChecked
-                            viewModel.updateFree(free)
-                        }
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                TextField(
-                    value = cost,
-                    onValueChange = { newCost ->
-                        cost = newCost
-                        viewModel.updateCost(cost)
-                    },
-                    label = { Text("Cost") }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                TextField(
-                    value = hours,
-                    onValueChange = { newHours ->
-                        hours = newHours
-                        viewModel.updateHours(hours)
-                    },
-                    label = { Text("Hours") }
-                )
+    var state by mutableStateOf(UpdateBathroomData())
+        private set
 
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    scope.launch {
-                        state.id = originalBathroomInfo.id
-                        viewModel.updateBathroom(state)
-                        onDismissRequest()
-                    }
-                }
-            ) {
-                Text("Update")
-            }
-        },
-        dismissButton = {
-            Button(
-                onClick = {
-                    onDismissRequest()
-                },
-            ) {
-                Text("Cancel")
-            }
+    fun updateId(id: Long) {
+        state = state.copy(id = id)
+    }
+
+    fun updateTitle(title: String) {
+        state = state.copy(title = title)
+    }
+
+    fun updateLocation(location: String) {
+        state = state.copy(location = location)
+    }
+
+    fun updateCapacity(capacity: String) {
+        capacity.toIntOrNull()?.let { state = state.copy(capacity = it) }
+    }
+
+    fun updateFree(free: Boolean) {
+        state = state.copy(free = free)
+    }
+
+    fun updateCost(cost: String) {
+        cost.toBigDecimalOrNull()?.let {
+            state = state.copy(cost = it)
         }
-    )
+    }
+
+    fun updateHours(hours: String) {
+        state = state.copy(hours = hours)
+    }
+
+    suspend fun updateBathroom(state: UpdateBathroomData) {
+        val apiService: ApiService
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        apiService = retrofit.create(ApiService::class.java)
+        apiService.updateBathroomData(state)
+    }
 }
