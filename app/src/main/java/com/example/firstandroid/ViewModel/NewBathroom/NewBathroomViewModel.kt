@@ -20,8 +20,6 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 
 
-//This annotation tells the Compose compiler that the functions is meant for UI construction.
-
 @Composable
 fun AddBathroomDialog(
     onDismissRequest: () -> Unit,
@@ -29,8 +27,7 @@ fun AddBathroomDialog(
 ) {
     val state = viewModel.state
     val scope = rememberCoroutineScope()
-    //remember is a function that allows you to create
-    // and retain a value across recompositions.
+
     AlertDialog(
         onDismissRequest = { onDismissRequest() },
         text = {

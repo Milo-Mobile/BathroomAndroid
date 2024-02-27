@@ -14,24 +14,24 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.firstandroid.ViewModel.NewBathroom.NewBathroomViewModel
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 
 @Composable
 fun UpdateBathroomDialog(
     onDismissRequest: () -> Unit,
     viewModel: UpdateBathroomViewModel,
+    originalBathroomInfo: UpdateBathroomData
 ) {
     val state = viewModel.state
     val scope = rememberCoroutineScope()
-    //remember is a function that allows you to create
-    // and retain a value across recompositions.
+
     AlertDialog(
         onDismissRequest = { onDismissRequest() },
         text = {
             Column {
                 TextField(
-                    value = state.title,
+                    value = originalBathroomInfo.title,
                     onValueChange = { newTitle ->
                         viewModel.updateTitle(newTitle)
                     },
@@ -39,7 +39,7 @@ fun UpdateBathroomDialog(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 TextField(
-                    value = state.location,
+                    value = originalBathroomInfo.location,
                     onValueChange = { newLocation ->
                         viewModel.updateLocation(newLocation)
                     },
@@ -47,7 +47,7 @@ fun UpdateBathroomDialog(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 TextField(
-                    value = state.capacity.toString(),
+                    value = originalBathroomInfo.capacity.toString(),
                     onValueChange = { newCapacity ->
                         viewModel.updateCapacity(newCapacity)
                     },
@@ -57,7 +57,7 @@ fun UpdateBathroomDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Free")
                     Checkbox(
-                        checked = state.free,
+                        checked = originalBathroomInfo.free,
                         onCheckedChange = { isChecked ->
                             viewModel.updateFree(isChecked)
                         }
@@ -65,7 +65,7 @@ fun UpdateBathroomDialog(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 TextField(
-                    value = state.cost.toString(),
+                    value = originalBathroomInfo.cost.toString(),
                     onValueChange = { newCost ->
                         viewModel.updateCost(newCost)
                     },
@@ -73,18 +73,20 @@ fun UpdateBathroomDialog(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 TextField(
-                    value = state.hours,
+                    value = originalBathroomInfo.hours,
                     onValueChange = { newHours ->
                         viewModel.updateHours(newHours)
                     },
                     label = { Text("Hours") }
                 )
+
             }
         },
         confirmButton = {
             Button(
                 onClick = {
                     scope.launch {
+                        state.id = originalBathroomInfo.id
                         viewModel.updateBathroom(state)
                     }
                 }

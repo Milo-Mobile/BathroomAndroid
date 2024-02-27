@@ -5,19 +5,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.firstandroid.BuildConfig.BuildConfig
-import com.example.firstandroid.ViewModel.NewBathroom.NewBathroomData
 import com.example.firstandroid.data.networking.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.math.BigDecimal
+import java.math.BigInteger
 
 
 class UpdateBathroomViewModel() : ViewModel() {
-    //define state for Data class
 
     var state by mutableStateOf(UpdateBathroomData())
         private set
 
+    fun updateId(id: Long){
+        state = state.copy(id = id)
+    }
     fun updateTitle(title: String) {
         state = state.copy(title = title)
     }
@@ -57,6 +59,7 @@ class UpdateBathroomViewModel() : ViewModel() {
     }
 }
 data class UpdateBathroomData(
+    var id: Long =0L,
     val title: String = "",
     val location: String = "",
     val capacity: Int = 0,
