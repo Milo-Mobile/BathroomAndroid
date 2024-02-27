@@ -1,4 +1,4 @@
-package com.example.firstandroid.ViewModel.UpdateBathroom
+package com.example.firstandroid.Presentation.UpdateBathroom
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,7 +9,6 @@ import com.example.firstandroid.data.networking.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.math.BigDecimal
-import java.math.BigInteger
 
 
 class UpdateBathroomViewModel() : ViewModel() {
@@ -29,9 +28,7 @@ class UpdateBathroomViewModel() : ViewModel() {
     }
 
     fun updateCapacity(capacity: String) {
-        capacity.toIntOrNull()?.let {
-            state = state.copy(capacity = it)
-        }
+        capacity.toIntOrNull()?.let { state = state.copy(capacity = it) }
     }
 
     fun updateFree(free: Boolean) {
@@ -60,11 +57,11 @@ class UpdateBathroomViewModel() : ViewModel() {
 }
 data class UpdateBathroomData(
     var id: Long =0L,
-    val title: String = "",
-    val location: String = "",
-    val capacity: Int = 0,
+    var title: String = "",
+    var location: String = "",
+    var capacity: Int = 0,
     var free: Boolean = false,
-    val cost: BigDecimal = BigDecimal.ZERO,
-    val hours: String = ""
+    var cost: BigDecimal = BigDecimal.ZERO,
+    var hours: String = ""
 )
 

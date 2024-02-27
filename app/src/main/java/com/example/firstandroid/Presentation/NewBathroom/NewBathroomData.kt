@@ -1,4 +1,4 @@
-package com.example.firstandroid.ViewModel.NewBathroom
+package com.example.firstandroid.Presentation.NewBathroom
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

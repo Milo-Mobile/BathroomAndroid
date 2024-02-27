@@ -1,4 +1,4 @@
-package com.example.firstandroid.data.model
+package com.example.firstandroid.Presentation.GetBathroom
 
 import java.math.BigDecimal
 
