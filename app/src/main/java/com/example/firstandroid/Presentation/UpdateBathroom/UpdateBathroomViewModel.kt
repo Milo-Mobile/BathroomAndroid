@@ -1,4 +1,4 @@
-package com.example.firstandroid.ViewModel.NewBathroom
+package com.example.firstandroid.Presentation.UpdateBathroom
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,11 +8,15 @@ import com.example.firstandroid.BuildConfig.BuildConfig
 import com.example.firstandroid.data.networking.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.math.BigDecimal
 
-class NewBathroomViewModel() : ViewModel() {
-    var state by mutableStateOf(NewBathroomData())
+class UpdateBathroomViewModel() : ViewModel() {
+
+    var state by mutableStateOf(UpdateBathroomData())
         private set
+
+    fun updateId(id: Long) {
+        state = state.copy(id = id)
+    }
 
     fun updateTitle(title: String) {
         state = state.copy(title = title)
@@ -23,9 +27,7 @@ class NewBathroomViewModel() : ViewModel() {
     }
 
     fun updateCapacity(capacity: String) {
-        capacity.toIntOrNull()?.let {
-            state = state.copy(capacity = it)
-        }
+        capacity.toIntOrNull()?.let { state = state.copy(capacity = it) }
     }
 
     fun updateFree(free: Boolean) {
@@ -42,24 +44,13 @@ class NewBathroomViewModel() : ViewModel() {
         state = state.copy(hours = hours)
     }
 
-    suspend fun addBathroom(state: NewBathroomData) {
+    suspend fun updateBathroom(state: UpdateBathroomData) {
         val apiService: ApiService
         val retrofit = Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         apiService = retrofit.create(ApiService::class.java)
-        apiService.addBathroomData(state)
+        apiService.updateBathroomData(state)
     }
 }
-//declare data
-data class NewBathroomData(
-    val title: String = "",
-    val location: String = "",
-    val capacity: Int = 0,
-    var free: Boolean = false,
-    val cost: BigDecimal = BigDecimal.ZERO,
-    val hours: String = ""
-)
-
-

@@ -1,4 +1,4 @@
-package com.example.firstandroid.ViewModel.UpdateBathroom
+package com.example.firstandroid.Presentation.NewBathroom
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,13 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
+
 
 @Composable
-fun UpdateBathroomDialog(
+fun AddBathroomDialog(
     onDismissRequest: () -> Unit,
-    viewModel: UpdateBathroomViewModel,
-    originalBathroomInfo: UpdateBathroomData
+    viewModel: NewBathroomViewModel,
 ) {
     val state = viewModel.state
     val scope = rememberCoroutineScope()
@@ -31,7 +30,7 @@ fun UpdateBathroomDialog(
         text = {
             Column {
                 TextField(
-                    value = originalBathroomInfo.title,
+                    value = state.title,
                     onValueChange = { newTitle ->
                         viewModel.updateTitle(newTitle)
                     },
@@ -39,7 +38,7 @@ fun UpdateBathroomDialog(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 TextField(
-                    value = originalBathroomInfo.location,
+                    value = state.location,
                     onValueChange = { newLocation ->
                         viewModel.updateLocation(newLocation)
                     },
@@ -47,7 +46,7 @@ fun UpdateBathroomDialog(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 TextField(
-                    value = originalBathroomInfo.capacity.toString(),
+                    value = state.capacity.toString(),
                     onValueChange = { newCapacity ->
                         viewModel.updateCapacity(newCapacity)
                     },
@@ -57,7 +56,7 @@ fun UpdateBathroomDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Free")
                     Checkbox(
-                        checked = originalBathroomInfo.free,
+                        checked = state.free,
                         onCheckedChange = { isChecked ->
                             viewModel.updateFree(isChecked)
                         }
@@ -65,7 +64,7 @@ fun UpdateBathroomDialog(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 TextField(
-                    value = originalBathroomInfo.cost.toString(),
+                    value = state.cost.toString(),
                     onValueChange = { newCost ->
                         viewModel.updateCost(newCost)
                     },
@@ -73,25 +72,23 @@ fun UpdateBathroomDialog(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 TextField(
-                    value = originalBathroomInfo.hours,
+                    value = state.hours,
                     onValueChange = { newHours ->
                         viewModel.updateHours(newHours)
                     },
                     label = { Text("Hours") }
                 )
-
             }
         },
         confirmButton = {
             Button(
                 onClick = {
                     scope.launch {
-                        state.id = originalBathroomInfo.id
-                        viewModel.updateBathroom(state)
+                        viewModel.addBathroom(state)
                     }
                 }
             ) {
-                Text("Update")
+                Text("Add")
             }
         },
         dismissButton = {

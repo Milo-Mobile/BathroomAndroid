@@ -7,10 +7,8 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,25 +27,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.example.firstandroid.BuildConfig.BuildConfig
-import com.example.firstandroid.ViewModel.NewBathroom.AddBathroomDialog
-import com.example.firstandroid.ViewModel.NewBathroom.NewBathroomViewModel
-import com.example.firstandroid.ViewModel.UpdateBathroom.UpdateBathroomData
-import com.example.firstandroid.ViewModel.UpdateBathroom.UpdateBathroomDialog
-import com.example.firstandroid.ViewModel.UpdateBathroom.UpdateBathroomViewModel
-import com.example.firstandroid.data.model.BathroomData
+import com.example.firstandroid.Presentation.NewBathroom.NewBathroomViewModel
+import com.example.firstandroid.Presentation.UpdateBathroom.UpdateBathroomData
+import com.example.firstandroid.Presentation.UpdateBathroom.UpdateBathroomDialog
+import com.example.firstandroid.Presentation.UpdateBathroom.UpdateBathroomViewModel
+import com.example.firstandroid.Presentation.GetBathroom.BathroomData
+import com.example.firstandroid.Presentation.NewBathroom.AddBathroomDialog
 import com.example.firstandroid.data.networking.ApiService
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.math.BigDecimal
-import java.math.BigInteger
 
 class MainActivity : ComponentActivity() {
     private lateinit var apiService: ApiService
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModel: NewBathroomViewModel by viewModels()
+        val newBathroomViewModel: NewBathroomViewModel by viewModels()
         val updateBathroomViewModel: UpdateBathroomViewModel by viewModels()
         // Initialize Retrofit
         val retrofit = Retrofit.Builder()
@@ -62,21 +58,19 @@ class MainActivity : ComponentActivity() {
                 val response = apiService.getBathroomData()
                 setContent {
                     val listOfBathroomData = response.body()?.data
-                    var isDialogOpen by remember { mutableStateOf(false) }
-                    var isUpdateDialogOpen by remember { mutableStateOf(false) }
+                    var isAddBathroomDialogOpen by remember { mutableStateOf(false) }
+                    var isUpdateBathroomDialogOpen by remember { mutableStateOf(false) }
                     var selectedBathroomId by remember { mutableLongStateOf(0L) }
                     var selectedBathroomTitle by remember { mutableStateOf("") }
                     var selectedBathroomLocation by remember { mutableStateOf("") }
-                    var selectedBathroomCapacity by remember{ mutableIntStateOf(0) }
-                    var selectedBathroomFree by remember{ mutableStateOf(false) }
-                    var selectedBathroomCost by remember{ mutableStateOf(BigDecimal.ZERO) }
-                    var selectedBathroomHours by remember{ mutableStateOf("") }
+                    var selectedBathroomCapacity by remember { mutableIntStateOf(0) }
+                    var selectedBathroomFree by remember { mutableStateOf(false) }
+                    var selectedBathroomCost by remember { mutableStateOf(BigDecimal.ZERO) }
+                    var selectedBathroomHours by remember { mutableStateOf("") }
                     Column(
                         modifier = Modifier.fillMaxSize(),
-//                        verticalArrangement = Arrangement.Top,
-//                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (response.isSuccessful && listOfBathroomData != null && listOfBathroomData.isNotEmpty()) {
+                        if (response.isSuccessful && !listOfBathroomData.isNullOrEmpty()) {
                             LazyColumn(
                                 verticalArrangement = Arrangement.spacedBy(16.dp),
                                 modifier = Modifier.weight(1f)
@@ -92,7 +86,7 @@ class MainActivity : ComponentActivity() {
                                         DisplayBathroomData(bathroom)
                                         Button(
                                             onClick = {
-                                                isUpdateDialogOpen = true
+                                                isUpdateBathroomDialogOpen = true
                                                 selectedBathroomId = bathroom.id!!
                                                 selectedBathroomTitle = bathroom.title!!
                                                 selectedBathroomLocation = bathroom.location!!
@@ -109,11 +103,19 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             }
-                            if (isUpdateDialogOpen) {
+                            if (isUpdateBathroomDialogOpen) {
                                 UpdateBathroomDialog(
                                     onDismissRequest = { onBackPressed() },
                                     viewModel = updateBathroomViewModel,
-                                    originalBathroomInfo = UpdateBathroomData(selectedBathroomId,selectedBathroomTitle,selectedBathroomLocation,selectedBathroomCapacity,selectedBathroomFree,selectedBathroomCost,selectedBathroomHours)
+                                    originalBathroomInfo = UpdateBathroomData(
+                                        id = selectedBathroomId,
+                                        title = selectedBathroomTitle,
+                                        location = selectedBathroomLocation,
+                                        capacity = selectedBathroomCapacity,
+                                        free = selectedBathroomFree,
+                                        cost = selectedBathroomCost,
+                                        hours = selectedBathroomHours
+                                    )
                                 )
                             }
                         } else {
@@ -121,7 +123,7 @@ class MainActivity : ComponentActivity() {
                         }
                         Button(
                             onClick = {
-                                isDialogOpen = true
+                                isAddBathroomDialogOpen = true
                             },
                             modifier = Modifier
                                 .padding(start = 16.dp, end = 16.dp)
@@ -129,10 +131,10 @@ class MainActivity : ComponentActivity() {
                         ) {
                             Text(text = "Add")
                         }
-                        if (isDialogOpen) {
+                        if (isAddBathroomDialogOpen) {
                             AddBathroomDialog(
                                 onDismissRequest = { onBackPressed() },
-                                viewModel = viewModel
+                                viewModel = newBathroomViewModel
                             )
                         }
                     }
@@ -150,12 +152,12 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun DisplayBathroomData(bathroomData: BathroomData) {
         Column {
-            Text(text = "Bathroom Title: ${bathroomData?.title}")
-            Text(text = "Location: ${bathroomData?.location}")
-            Text(text = "Capacity: ${bathroomData?.capacity}")
-            Text(text = "Free: ${bathroomData?.free}")
-            Text(text = "Cost: ${bathroomData?.cost}")
-            Text(text = "Hours: ${bathroomData?.hours}")
+            Text(text = "Bathroom Title: ${bathroomData.title}")
+            Text(text = "Location: ${bathroomData.location}")
+            Text(text = "Capacity: ${bathroomData.capacity}")
+            Text(text = "Free: ${bathroomData.free}")
+            Text(text = "Cost: ${bathroomData.cost}")
+            Text(text = "Hours: ${bathroomData.hours}")
         }
     }
 
