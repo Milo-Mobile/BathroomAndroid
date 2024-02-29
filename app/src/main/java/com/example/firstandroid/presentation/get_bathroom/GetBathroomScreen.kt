@@ -1,6 +1,5 @@
 package com.example.firstandroid.presentation.get_bathroom
 
-import com.example.firstandroid.presentation.update_bathroom.UpdateBathroomState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Modifier
 import com.example.firstandroid.presentation.add_bathroom.AddBathroomDialog
 import com.example.firstandroid.presentation.add_bathroom.NewBathroomViewModel
-
 import com.example.firstandroid.presentation.update_bathroom.UpdateBathroomDialog
 import com.example.firstandroid.presentation.update_bathroom.UpdateBathroomViewModel
 import java.math.BigDecimal
@@ -36,10 +34,14 @@ fun GetBathroomDialog(
     viewModel: GetBathroomViewModel,
 
     ) {
+
     val updateBathroomViewModel = UpdateBathroomViewModel()
-    updateBathroomViewModel.onStart()
+
+    val newBathroomViewModel = NewBathroomViewModel()
+
     val state = viewModel.state
     val bathroomList = state.getBathroomList
+
     var isAddBathroomDialogOpen by remember { mutableStateOf(false) }
     var isUpdateBathroomDialogOpen by remember { mutableStateOf(false) }
     var selectedBathroomId by remember { mutableLongStateOf(0L) }
@@ -53,14 +55,14 @@ fun GetBathroomDialog(
 
     DisposableEffect(key1 = viewModel) {
         viewModel.onStart()
-        onDispose { }
+        onDispose { onDismissRequest()}
     }
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
         if (bathroomList.isNotEmpty()) {
             LazyColumn(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.weight(1f)
             ) {
                 items(bathroomList) { bathroom ->
                     Row(
@@ -80,14 +82,14 @@ fun GetBathroomDialog(
                         }
                         Button(
                             onClick = {
-                                isUpdateBathroomDialogOpen = true
-                                selectedBathroomId = bathroom.id!!
+                                selectedBathroomId = bathroom.id
                                 selectedBathroomTitle = bathroom.title!!
                                 selectedBathroomLocation = bathroom.location!!
                                 selectedBathroomCapacity = bathroom.capacity!!
                                 selectedBathroomFree = bathroom.free!!
-                                selectedBathroomCost = bathroom.cost!!
+                                selectedBathroomCost = bathroom.cost
                                 selectedBathroomHours = bathroom.hours!!
+                                isUpdateBathroomDialogOpen = true
                             },
                             modifier = Modifier.wrapContentWidth()
                         ) {
@@ -97,29 +99,34 @@ fun GetBathroomDialog(
                 }
             }
             if (isUpdateBathroomDialogOpen) {
+                updateBathroomViewModel.state.title = selectedBathroomTitle
+                updateBathroomViewModel.state.location = selectedBathroomLocation
+                updateBathroomViewModel.state.cost = selectedBathroomCost
+                updateBathroomViewModel.state.free = selectedBathroomFree
+                updateBathroomViewModel.state.capacity = selectedBathroomCapacity
+                updateBathroomViewModel.state.hours = selectedBathroomHours
+                updateBathroomViewModel.state.id = selectedBathroomId
                 UpdateBathroomDialog(
-                    onDismissRequest = { },
-                    viewModel = updateBathroomViewModel,
-                    originalBathroomInfo = UpdateBathroomState(
-                        id = selectedBathroomId,
-                        title = selectedBathroomTitle,
-                        location = selectedBathroomLocation,
-                        capacity = selectedBathroomCapacity,
-                        free = selectedBathroomFree,
-                        cost = selectedBathroomCost,
-                        hours = selectedBathroomHours
-                    ),
+                    onDismissRequest = { isUpdateBathroomDialogOpen = false},
+                    viewModel = updateBathroomViewModel
                 )
             }
-            Button(
-                onClick = {
-                    isAddBathroomDialogOpen = true
-                },
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp)
-            ) {
-                Text(text = "Add")
-            }
+        }
+        Button(
+            onClick = {
+                isAddBathroomDialogOpen = true
+            },
+            modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp)
+                .align(Alignment.CenterHorizontally)
+        ) {
+            Text(text = "Add")
+        }
+
+        if(isAddBathroomDialogOpen){
+            AddBathroomDialog(
+                onDismissRequest = {isAddBathroomDialogOpen = false },
+                viewModel = newBathroomViewModel)
         }
     }
 }

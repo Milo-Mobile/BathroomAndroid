@@ -1,9 +1,9 @@
 package com.example.firstandroid.data.networking
 
-import com.example.firstandroid.presentation.get_bathroom.GetBathroomData
+import com.example.firstandroid.presentation.get_bathroom.GetBathroomState
 
 data class GetBathroomResponse(
-    val data: List<GetBathroomData>,
+    val data: List<GetBathroomState>,
 )
 
 data class AddBathroomResponse(
