@@ -1,18 +1,28 @@
-package com.example.firstandroid.Presentation.UpdateBathroom
+package com.example.firstandroid.presentation.update_bathroom
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.firstandroid.BuildConfig.BuildConfig
-import com.example.firstandroid.data.networking.ApiService
+import androidx.lifecycle.viewModelScope
+import com.example.firstandroid.build_config.BuildConfig
+import com.example.firstandroid.data.repository.BathroomRepository
+import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 
 class UpdateBathroomViewModel() : ViewModel() {
 
-    var state by mutableStateOf(UpdateBathroomData())
+    var state by mutableStateOf(UpdateBathroomState())
         private set
+
+    private lateinit var bathroomRepository: BathroomRepository
+
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(BuildConfig.BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
 
     fun updateId(id: Long) {
         state = state.copy(id = id)
@@ -44,13 +54,10 @@ class UpdateBathroomViewModel() : ViewModel() {
         state = state.copy(hours = hours)
     }
 
-    suspend fun updateBathroom(state: UpdateBathroomData) {
-        val apiService: ApiService
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        apiService = retrofit.create(ApiService::class.java)
-        apiService.updateBathroomData(state)
+    fun onStart() {
+        bathroomRepository = retrofit.create(BathroomRepository::class.java)
+    }
+    suspend fun updateBathroom(state: UpdateBathroomState) {
+        bathroomRepository.updateBathroomData(state)
     }
 }

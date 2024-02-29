@@ -1,8 +1,8 @@
-package com.example.firstandroid.Presentation.UpdateBathroom
+package com.example.firstandroid.presentation.update_bathroom
 
 import java.math.BigDecimal
 
-data class UpdateBathroomData(
+data class UpdateBathroomState(
     var id: Long = 0L,
     var title: String = "",
     var location: String = "",
