@@ -7,16 +7,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.firstandroid.build_config.BuildConfig
 import com.example.firstandroid.data.repository.BathroomRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 
 class UpdateBathroomViewModel() : ViewModel() {
 
     var state by mutableStateOf(UpdateBathroomState())
         private set
-
+    private val _name = MutableStateFlow("")
+    val title = MutableStateFlow(state.title)
+    private val newTitle = title
     private lateinit var bathroomRepository: BathroomRepository
 
     private val retrofit = Retrofit.Builder()
@@ -57,7 +59,10 @@ class UpdateBathroomViewModel() : ViewModel() {
     fun onStart() {
         bathroomRepository = retrofit.create(BathroomRepository::class.java)
     }
-    suspend fun updateBathroom(state: UpdateBathroomState) {
-        bathroomRepository.updateBathroomData(state)
+
+    fun updateBathroom(state: UpdateBathroomState) {
+        viewModelScope.launch {
+            bathroomRepository.updateBathroomData(state)
+        }
     }
 }

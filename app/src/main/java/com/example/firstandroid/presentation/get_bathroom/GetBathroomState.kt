@@ -2,8 +2,8 @@ package com.example.firstandroid.presentation.get_bathroom
 
 import java.math.BigDecimal
 
-data class GetBathroomData(
-    val id: Long? = 0L,
+data class GetBathroomState(
+    val id: Long = 0L,
     val title: String? = "",
     val location: String? = "",
     val capacity: Int? = 0,
@@ -14,7 +14,7 @@ data class GetBathroomData(
     val modifiedAt: String? = "",
 )
 data class GetBathroomDataList(
-    val getBathroomList: List<GetBathroomData> = emptyList()
+    val getBathroomList: List<GetBathroomState> = emptyList()
 )
 
 
